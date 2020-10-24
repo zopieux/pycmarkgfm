@@ -1,0 +1,19 @@
+diff --git a/extensions/tasklist.c b/extensions/tasklist.c
+index 7bef454..edcf754 100644
+--- a/extensions/tasklist.c
++++ b/extensions/tasklist.c
+@@ -120,6 +120,14 @@ static void html_render(cmark_syntax_extension *extension,
+     cmark_html_render_cr(renderer->html);
+     cmark_strbuf_puts(renderer->html, "<li");
+     cmark_html_render_sourcepos(node, renderer->html, options);
++    // Insert a unique identifier.
++#define TASKLIST_ID_SIZE 100
++    char buffer[TASKLIST_ID_SIZE];
++    snprintf(buffer, TASKLIST_ID_SIZE, " data-gfm-task=\"%d:%d-%d:%d\"",
++             cmark_node_get_start_line(node), cmark_node_get_start_column(node),
++             cmark_node_get_end_line(node), cmark_node_get_end_column(node));
++#undef TASKLIST_ID_SIZE
++    cmark_strbuf_puts(renderer->html, buffer);
+     cmark_strbuf_putc(renderer->html, '>');
+     if (node->as.list.checked) {
+       cmark_strbuf_puts(renderer->html, "<input type=\"checkbox\" checked=\"\" disabled=\"\" /> ");

@@ -1,0 +1,7 @@
+name: Patch cmark-gfm
+description: Apply local modifications to cmark-gfm
+runs:
+  using: "composite"
+  steps:
+    - run: git -C third_party/cmark apply $PWD/tasklist-id.patch
+      shell: bash
