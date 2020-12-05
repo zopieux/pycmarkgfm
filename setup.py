@@ -8,7 +8,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md'), encoding='utf-8'
 
 setup(
     name='pycmarkgfm',
-    version='1.0.1',
+    version='1.1.0',
     description="Bindings to GitHub's Flavored Markdown (cmark-gfm), with enhanced support for task lists.",
     long_description=long_description,
     long_description_content_type="text/markdown",
