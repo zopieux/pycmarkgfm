@@ -1,4 +1,4 @@
-from pycmarkgfm import cmark
+from pycmarkgfm import cmark, options
 
 
 def test_markdown_to_html():
@@ -95,3 +95,80 @@ def test_gfm_toggle_tasklist():
 - [ ] a tasklist
 """.strip()
     )
+
+
+def test_option_sourcepos():
+    text = "# Foo\n\nBar."
+    html = cmark.markdown_to_html(text, options=options.sourcepos)
+    assert 'data-sourcepos="1' in html
+    assert html != cmark.markdown_to_html(text)
+
+
+def test_option_hardbreaks():
+    text = "Line 1.\nLine 2.\n"
+    assert cmark.markdown_to_html(text) == "<p>Line 1.\nLine 2.</p>\n"
+    html = cmark.markdown_to_html(text, options=options.hardbreaks)
+    assert html == "<p>Line 1.<br />\nLine 2.</p>\n"
+
+
+def test_option_unsafe():
+    text = "Line. <img src='doge.png'> Line."
+    assert (
+        cmark.markdown_to_html(text) == "<p>Line. <!-- raw HTML omitted --> Line.</p>\n"
+    )
+    html = cmark.markdown_to_html(text, options=options.unsafe)
+    assert html == "<p>Line. <img src='doge.png'> Line.</p>\n"
+
+
+def test_option_nobreaks():
+    text = "Line 1.\nLine 2.\n"
+    html = cmark.markdown_to_html(text, options=options.nobreaks)
+    assert html == "<p>Line 1. Line 2.</p>\n"
+
+
+def test_option_smart():
+    text = 'She said --- "Smart -- but not too wise".'
+    assert (
+        cmark.markdown_to_html(text)
+        == "<p>She said --- &quot;Smart -- but not too wise&quot;.</p>\n"
+    )
+    html = cmark.markdown_to_html(text, options=options.smart)
+    assert html == "<p>She said \N{EM DASH} “Smart \N{EN DASH} but not too wise”.</p>\n"
+
+
+def test_option_github_pre_lang():
+    text = """Some code.
+
+```c
+int main(void) { return 42; }
+```"""
+    assert (
+        cmark.markdown_to_html(text)
+        == '<p>Some code.</p>\n<pre><code class="language-c">int main(void) { return 42; }\n</code></pre>\n'
+    )
+    html = cmark.markdown_to_html(text, options=options.github_pre_lang)
+    assert (
+        html
+        == '<p>Some code.</p>\n<pre lang="c"><code>int main(void) { return 42; }\n</code></pre>\n'
+    )
+
+
+def test_option_footnotes():
+    text = """Woke up on the wrong foot[^1].\n\n[^1]: Note."""
+    assert (
+        cmark.markdown_to_html(text)
+        == '<p>Woke up on the wrong foot<a href="Note.">^1</a>.</p>\n'
+    )
+    html = cmark.markdown_to_html(text, options=options.footnotes)
+    assert '<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a>' in html
+    assert '<li id="fn1">\n<p>Note. <a href="#fnref1"' in html
+
+
+def test_option_strikethrough_double_tilde():
+    text = """This is ~so~ ~~very~~ extremely smart."""
+    assert (
+        cmark.gfm_to_html(text)
+        == "<p>This is <del>so</del> <del>very</del> extremely smart.</p>\n"
+    )
+    html = cmark.gfm_to_html(text, options=options.strikethrough_double_tilde)
+    assert html == "<p>This is ~so~ <del>very</del> extremely smart.</p>\n"

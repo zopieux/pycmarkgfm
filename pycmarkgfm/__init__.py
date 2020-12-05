@@ -7,6 +7,7 @@ from pycmarkgfm.cmark import (
     TOGGLE,
     GFM_EXTENSIONS,
 )
+from pycmarkgfm import options
 
 __all__ = [
     "markdown_to_html",
@@ -16,4 +17,5 @@ __all__ = [
     "gfm_toggle_task_by_id",
     "TOGGLE",
     "GFM_EXTENSIONS",
+    "options",
 ]

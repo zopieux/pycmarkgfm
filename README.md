@@ -30,7 +30,26 @@ html = pycmarkgfm.markdown_to_html("Hello *world*")
 html = pycmarkgfm.gfm_to_html("Hello ~world~")
 ```
 
-## Advanced usage
+### Options
+
+cmark and cmark-gfm come with a bunch of customization options (also known as *flags*) which are made available through
+the `pycmarkgfm.options` module. To use one or multiple options, use the `options=` argument with a mask 
+(bitwise-or combination) of `pycmarkgfm.options`. Each option is documented.
+
+```python
+text = "hello\n<img src='doge.png'>"
+
+print(pycmarkgfm.markdown_to_html(text))
+# <p>hello
+# <!-- raw HTML omitted --></p>
+
+from pycmarkgfm import options
+print(pycmarkgfm.markdown_to_html(text, options=options.unsafe | options.hardbreaks))
+# <p>hello<br />
+# <img src='doge.png'></p>
+``` 
+
+### Dealing with task lists
 
 One of the distinctive features of this package is support for task lists.
 You can get the list of tasks with their checked state, and update that state before rendering:
