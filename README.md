@@ -7,7 +7,7 @@ with enhanced support for task lists.
 
 * By design, rendering is compliant with GitHub's, since this package wraps GitHub's own C parser and serializer.  
 * As opposed to most cmark-gfm bindings out there, this package supports
-  [parsing and toggling task lists](#advanced-usage).
+  [parsing and toggling task lists](#dealing-with-task-lists).
 * Compatibility: 
   [![](https://github.com/Zopieux/pycmarkgfm/workflows/Test%20and%20package/badge.svg)](https://github.com/Zopieux/pycmarkgfm/actions?query=workflow%3A%22Test+and+package%22) 
   with Python 3.5, 3.6, 3.7, 3.8, 3.9 on Linux-like platforms. If you need Windows support, please contribute a PR.
@@ -33,8 +33,8 @@ html = pycmarkgfm.gfm_to_html("Hello ~world~")
 ### Options
 
 cmark and cmark-gfm come with a bunch of customization options (also known as *flags*) which are made available through
-the `pycmarkgfm.options` module. To use one or multiple options, use the `options=` argument with a mask 
-(bitwise-or combination) of `pycmarkgfm.options`. Each option is documented.
+the [`pycmarkgfm.options` module](pycmarkgfm/options.py). To use one or multiple options, use the `options=` argument 
+with a mask (bitwise-or combination) of `pycmarkgfm.options`. Each option is documented.
 
 ```python
 text = "hello\n<img src='doge.png'>"
