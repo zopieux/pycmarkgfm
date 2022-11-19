@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.5, 3.6, 3.7, 3.8, 3.9]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
 
     steps:
       - uses: actions/checkout@v2
@@ -50,7 +50,7 @@ jobs:
 
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: "3.10"
 
       - name: Install dependencies
         run: python -m pip install mypy
@@ -89,7 +89,7 @@ jobs:
         with:
           entrypoint: /bin/bash
           args: >
-            -c "set -ex; cd /github/workspace && for py in 35 36 37 38 39; do /opt/python/cp${py}-cp*/bin/python setup.py bdist_wheel && auditwheel repair dist/*${py}*.whl && /opt/python/cp${py}-cp*/bin/python -m venv /tmp/test && /tmp/test/bin/pip install wheelhouse/*cp${py}*.whl && pushd /tmp && echo 'it *works*' | /tmp/test/bin/python -c 'import sys, pycmarkgfm; print(pycmarkgfm.gfm_to_html(sys.stdin.read()))' | grep '<p>it <em>works</em></p>'; popd; rm -rf /tmp/test; done"
+            -c "set -ex; cd /github/workspace && for py in 37 38 39 310 311; do /opt/python/cp${py}-cp*/bin/python setup.py bdist_wheel && auditwheel repair dist/*${py}*.whl && /opt/python/cp${py}-cp*/bin/python -m venv /tmp/test && /tmp/test/bin/pip install wheelhouse/*cp${py}*.whl && pushd /tmp && echo 'it *works*' | /tmp/test/bin/python -c 'import sys, pycmarkgfm; print(pycmarkgfm.gfm_to_html(sys.stdin.read()))' | grep '<p>it <em>works</em></p>'; popd; rm -rf /tmp/test; done"
 
       - uses: actions/upload-artifact@v2
         # On tags only.
