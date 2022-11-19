@@ -160,8 +160,8 @@ def test_option_footnotes():
         == '<p>Woke up on the wrong foot<a href="Note.">^1</a>.</p>\n'
     )
     html = cmark.markdown_to_html(text, options=options.footnotes)
-    assert '<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a>' in html
-    assert '<li id="fn1">\n<p>Note. <a href="#fnref1"' in html
+    assert '<sup class="footnote-ref"><a href="#fn-1" id="fnref-1" data-footnote-ref>1</a>' in html
+    assert '<li id="fn-1">\n<p>Note. <a href="#fnref-1"' in html
 
 
 def test_option_strikethrough_double_tilde():
