@@ -85,7 +85,7 @@ jobs:
         uses: ./.github/actions/cmark-gfm-patch
 
       - name: Build manylinux wheels and test installing from them
-        uses: docker://quay.io/pypa/manylinux1_x86_64
+        uses: docker://quay.io/pypa/manylinux_2_28_x86_64
         with:
           entrypoint: /bin/bash
           args: >
