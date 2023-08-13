@@ -1,0 +1,56 @@
+name: "Generate cmark header files"
+
+on:
+  push:
+    branches: windows-support
+
+jobs:
+  generate:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-20.04, windows-2022 ]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Patch cmark-gfm
+        uses: ./.github/actions/cmark-gfm-patch
+
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake ../third_party/cmark
+      
+      - name: Copy (Windows)
+        if: ${{ runner.os == 'Windows' }}
+        working-directory: ./build
+        run: |
+          Get-ChildItem -Recurse
+          cp extensions/cmark-gfm-extensions_export.h ${{github.workspace}}/generated/windows
+          cp src/cmark-gfm_export.h ${{github.workspace}}/generated/windows
+          cp src/cmark-gfm_version.h ${{github.workspace}}/generated/windows
+          cp src/config.h ${{github.workspace}}/generated/windows
+        
+      - name: Copy (Unix)
+        if: ${{ runner.os == 'Linux' }}
+        working-directory: ./build
+        run: |
+          ls -lRa
+          cp extensions/cmark-gfm-extensions_export.h src/cmark-gfm_export.h src/cmark-gfm_version.h src/config.h ${{github.workspace}}/generated/unix
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          add-paths: generated/
+          title: Update generated headers for ${{runner.os}}
+          commit-message: Update generated headers for ${{runner.os}}.
+          body: ''
+          reviewers: zopieux
+          branch: gen-headers
+          branch-suffix: short-commit-hash
+          delete-branch: true

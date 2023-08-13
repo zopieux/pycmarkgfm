@@ -2,6 +2,7 @@ name: "Test and package"
 
 on:
   push:
+    branches-ignore: [ windows-support ]
   pull_request:
 
 jobs:
@@ -73,27 +74,41 @@ jobs:
       - name: Check for diffs
         run: git diff --exit-code
 
-  package-wheel:
-    name: "Build manylinux wheels"
-    runs-on: ubuntu-latest
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, windows-2019, macos-11]
+
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
 
       - name: Patch cmark-gfm
         uses: ./.github/actions/cmark-gfm-patch
 
-      - name: Build manylinux wheels and test installing from them
-        uses: docker://quay.io/pypa/manylinux_2_28_x86_64
+      - uses: actions/setup-python@v3
+        name: Install Python
         with:
-          entrypoint: /bin/bash
-          args: >
-            -c "set -ex; cd /github/workspace && for py in 37 38 39 310 311; do /opt/python/cp${py}-cp*/bin/python setup.py bdist_wheel && auditwheel repair dist/*${py}*.whl && /opt/python/cp${py}-cp*/bin/python -m venv /tmp/test && /tmp/test/bin/pip install wheelhouse/*cp${py}*.whl && pushd /tmp && echo 'it *works*' | /tmp/test/bin/python -c 'import sys, pycmarkgfm; print(pycmarkgfm.gfm_to_html(sys.stdin.read()))' | grep '<p>it <em>works</em></p>'; popd; rm -rf /tmp/test; done"
+          python-version: '3.11'
 
-      - uses: actions/upload-artifact@v2
-        # On tags only.
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        with:
-          path: wheelhouse/*manylinux*.whl
-          if-no-files-found: error
+      - name: Install build deps
+        run: |
+          python -m pip --disable-pip-version-check install cibuildwheel==2.10.0 twine==4.0.1
+
+      - uses: docker/setup-qemu-action@v1
+        if: runner.os == 'Linux'
+        name: Set up QEMU
+
+      - name: Build wheels
+        run: |
+          python -m cibuildwheel --output-dir wheelhouse
+          twine check ./wheelhouse/*.whl
+
+      - name: Build sdist
+        if: runner.os == 'Linux'
+        run: |
+          python setup.py sdist
+          twine check ./dist/*.tar.gz
