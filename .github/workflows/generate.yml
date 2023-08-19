@@ -32,7 +32,6 @@ jobs:
         run: |
           Get-ChildItem -Recurse
           New-Item -ItemType Directory -Force -Path ${{ github.workspace }}/generated/windows
-          Copy-Item -Force -Path extensions/cmark-gfm-extensions_export.h -Destination ${{ github.workspace }}/generated/windows
           Copy-Item -Force -Path src/cmark-gfm_export.h -Destination ${{ github.workspace}}/generated/windows
           Copy-Item -Force -Path src/cmark-gfm_version.h -Destination ${{ github.workspace}}/generated/windows
           Copy-Item -Force -Path src/config.h -Destination ${{ github.workspace }}/generated/windows
@@ -43,7 +42,7 @@ jobs:
         run: |
           ls -lRa
           mkdir -p ${{ github.workspace }}/generated/unix
-          cp extensions/cmark-gfm-extensions_export.h src/cmark-gfm_export.h src/cmark-gfm_version.h src/config.h ${{ github.workspace }}/generated/unix
+          cp src/cmark-gfm_export.h src/cmark-gfm_version.h src/config.h ${{ github.workspace }}/generated/unix
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
