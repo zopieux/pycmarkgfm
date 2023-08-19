@@ -1,3 +1,9 @@
+### 1.2.1
+
+* No new feature nor bugfix.
+* Now compatible with both Linux, MacOS and Windows, with precompiled wheels.
+* The process of publishing package updates, including wheels, is now automatic via GitHub actions.
+
 ### 1.2.0
 
 * No new feature nor bugfix.

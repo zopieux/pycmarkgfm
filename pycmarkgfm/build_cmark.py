@@ -15,7 +15,8 @@ PACKAGE_ROOT = os.path.abspath(os.path.dirname(CWD))
 BUILD = os.path.join(PACKAGE_ROOT, "build")
 SRC_DIR = os.path.join(PACKAGE_ROOT, "third_party/cmark/src")
 EXTENSIONS_SRC_DIR = os.path.join(PACKAGE_ROOT, "third_party/cmark/extensions")
-UNIX_GENERATED_SRC_DIR = os.path.join(PACKAGE_ROOT, "generated")
+UNIX_GENERATED_SRC_DIR = os.path.join(PACKAGE_ROOT, "generated", "unix")
+WIN_GENERATED_SRC_DIR = os.path.join(PACKAGE_ROOT, "generated", "windows")
 
 with open(os.path.join(CWD, "cmark.cffi.h"), "r", encoding="utf-8") as fh:
     CMARK_DEF_H = fh.read()
@@ -56,11 +57,12 @@ def _compiler_type():
 
 
 COMPILER_TYPE = _compiler_type()
-PY2 = sys.version_info[0] < 3
-PY34 = sys.version_info[:2] == (3, 4)
-if COMPILER_TYPE in {"unix", "mingw32"} or (PY2 or PY34):
+if COMPILER_TYPE in {"unix", "mingw32"}:
     EXTRA_COMPILE_ARGS = ["-std=c99"]
     GENERATED_SRC_DIR = UNIX_GENERATED_SRC_DIR
+elif COMPILER_TYPE == "msvc":
+    EXTRA_COMPILE_ARGS = ["/TP"]
+    GENERATED_SRC_DIR = WIN_GENERATED_SRC_DIR
 else:
     raise ValueError("unsupported compiler: %s" % COMPILER_TYPE)
 

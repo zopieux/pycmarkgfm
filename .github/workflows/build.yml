@@ -1,0 +1,73 @@
+name: Package and upload to PyPi
+on:
+  release:
+    types: [published, edited]
+jobs:
+  build:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, windows-2022, macos-12]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Patch cmark-gfm
+        uses: ./.github/actions/cmark-gfm-patch
+
+      - uses: actions/setup-python@v3
+        name: Install Python
+        with:
+          python-version: '3.11'
+
+      - name: Install build deps
+        run: |
+          python -m pip --disable-pip-version-check install cibuildwheel==2.15.0 twine==4.0.2
+
+      - uses: docker/setup-qemu-action@v1
+        if: runner.os == 'Linux'
+        name: Set up QEMU
+
+      - name: Build wheels
+        run: |
+          python -m cibuildwheel --output-dir dist
+          twine check ./dist/*.whl
+
+      - name: Build sdist
+        if: runner.os == 'Linux'
+        run: |
+          python setup.py sdist
+          twine check ./dist/*.tar.gz
+
+      - uses: actions/upload-artifact@v3
+        name: Upload wheels and sdist
+        with:
+          name: dist-${{ matrix.os }}
+          path: |-
+            ./dist/*.whl
+            ./dist/*.tar.gz
+
+  upload-pypi:
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write
+    needs: [build]
+
+    steps:
+      - name: Retrieve dists
+        uses: actions/download-artifact@v3
+        with:
+          # No name to download from all matrix runs.
+          path: all_dists
+
+      - name: Combine dists into one folder
+        run: |-
+          mkdir -p dist
+          find all_dists/ -type f -exec cp -v '{}' dist/ ';'
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
