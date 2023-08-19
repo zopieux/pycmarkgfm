@@ -9,12 +9,12 @@ with enhanced support for task lists.
 * As opposed to most cmark-gfm bindings out there, this package supports
   [parsing and toggling task lists](#dealing-with-task-lists).
 * Compatibility: 
-  [![](https://github.com/Zopieux/pycmarkgfm/workflows/Test%20and%20package/badge.svg)](https://github.com/Zopieux/pycmarkgfm/actions?query=workflow%3A%22Test+and+package%22) 
-  with Python 3.5, 3.6, 3.7, 3.8, 3.9 on Linux-like platforms. If you need Windows support, please contribute a PR.
+  [![](https://github.com/zopieux/pycmarkgfm/actions/workflows/check.yml/badge.svg?event=release)](https://github.com/zopieux/pycmarkgfm/actions/workflows/check.yml)
+  with Python 3.7 & newer, on Linux, MacOS and Windows.
 
 ## Installation
 
-This packages is [available on PyPi](https://pypi.org/project/pycmarkgfm/).
+This packages is [available on PyPi](https://pypi.org/project/pycmarkgfm/) along with precompiled wheels for most architectures.
 
     $ pip install pycmarkgfm
 
@@ -107,7 +107,7 @@ You can also use `checked=True/False` instead of `TOGGLE` to force a particular 
 [cmarkgfm](https://pypi.org/project/cmarkgfm/) is similar to this package, in fact cmarkgfm's cffi build script
 is partially re-used in this project – in compliance with its MIT license.
 
-As of October 2020, cmarkgfm is still a well-maintained project and I recommend using it if you don't need the extra
+As of October 2023, cmarkgfm is still a well-maintained project and I recommend using it if you don't need the extra
 features provided by pycmarkgfm, most notably the support for task lists.
 
 ## License
